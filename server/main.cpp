@@ -20,10 +20,11 @@
 using json = nlohmann::json;
 using namespace std;
 
+string getTimeStamp();
 // TODO: Create a header and put all this in there
 struct received_message
 {
-    int timestamp;
+    string timestamp;
     int value;
 };
 map<int, vector<received_message>> producer_data_map;
@@ -103,7 +104,7 @@ void http_server(){
                         content.append("<h1>ID:" + http_header_word + "</h1>\n");
                         for (auto const &pair : *data_map_pointer) {
                             for (auto &sec_pair: pair.second){
-                                content.append("<h2> Timestamp:" + to_string(sec_pair.timestamp) + " Value:"+to_string(sec_pair.value) + "</h2>\n");
+                                content.append("<h2> Timestamp:" + sec_pair.timestamp + " Value:"+to_string(sec_pair.value) + "</h2>\n");
                             }
                         }
                     }
@@ -124,7 +125,7 @@ void http_server(){
                         content.append("<h1>ID:" + http_header_word + "</h1>\n");
                         for (auto const &pair : *data_map_pointer) {
                             for (auto &sec_pair : pair.second) {
-                                content.append("<h2> Timestamp:" + to_string(sec_pair.timestamp) + " Value:" + to_string(sec_pair.value) + "</h2>\n");
+                                content.append("<h2> Timestamp:" + sec_pair.timestamp + " Value:" + to_string(sec_pair.value) + "</h2>\n");
                             }
                         }
                     }
@@ -222,6 +223,7 @@ void udp_server(){
 
         received_message received_msg;
         received_msg.value = json_data.at("value");
+        received_msg.timestamp = getTimeStamp();
 
         // Search if server doesn't know client
         if (data_map_pointer->find(json_data.at("id")) == data_map_pointer->end())
@@ -263,4 +265,16 @@ int main(){
         //udp_thread.join();
         //http_thread.join();
     return 0;
+}
+
+string getTimeStamp(){
+    time_t rawtime;
+    struct tm * timeInfo;
+
+    time(&rawtime);
+
+    timeInfo = localtime(&rawtime);
+
+
+    return asctime(timeInfo);
 }
