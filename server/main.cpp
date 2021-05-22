@@ -26,6 +26,7 @@ struct received_message
 {
     string timestamp;
     int value;
+    int id;
 };
 map<int, vector<received_message>> producer_data_map;
 map<int, vector<received_message>> consumer_data_map;
@@ -85,7 +86,7 @@ void http_server(){
         getline(http_header, http_header_word, ' ');
         http_header.str(http_header_word); // Save URL of requeste resource
         printf("This should be the URL: %s", http_header_word.c_str());
-        getline(http_header, http_header_word, '/'); // Ignore first slash 
+        getline(http_header, http_header_word, '/'); // Ignore first slash
         getline(http_header, http_header_word, '/');
 
         // We accept URLs with this structure:
@@ -93,6 +94,7 @@ void http_server(){
         if (http_header_word == "api"){
             getline(http_header, http_header_word, '/');
             if (http_header_word == "consumer") {
+                data_map_pointer = &consumer_data_map;
                 getline(http_header, http_header_word, '/');
                 // Convert ID to integer and see if we have it on list
                 try {
@@ -102,11 +104,10 @@ void http_server(){
                     }
                     else {
                         content.append("<h1>ID:" + http_header_word + "</h1>\n");
-                        for (auto const &pair : *data_map_pointer) {
+                        auto const &pair = *data_map_pointer->find(stoi(http_header_word));
                             for (auto &sec_pair: pair.second){
-                                content.append("<h2> Timestamp:" + sec_pair.timestamp + " Value:"+to_string(sec_pair.value) + "</h2>\n");
+                                content.append("<h2> id: " + to_string(sec_pair.id) + "Timestamp:" + sec_pair.timestamp + " Value:"+to_string(sec_pair.value) + "</h2>\n");
                             }
-                        }
                     }
                 }
                 catch (exception &err) {
@@ -114,6 +115,7 @@ void http_server(){
                 }
             }
             else if (http_header_word == "producer") {
+                data_map_pointer = &producer_data_map;
                 getline(http_header, http_header_word, '/');
                 // Convert ID to integer and see if we have it on list
                 try{
@@ -123,11 +125,10 @@ void http_server(){
                     }
                     else {
                         content.append("<h1>ID:" + http_header_word + "</h1>\n");
-                        for (auto const &pair : *data_map_pointer) {
+                        auto const &pair = *data_map_pointer->find(stoi(http_header_word));
                             for (auto &sec_pair : pair.second) {
-                                content.append("<h2> Timestamp:" + sec_pair.timestamp + " Value:" + to_string(sec_pair.value) + "</h2>\n");
+                                content.append("<h2> id: " + to_string(sec_pair.id) + " Timestamp:" + sec_pair.timestamp + " Value:" + to_string(sec_pair.value) + "</h2>\n");
                             }
-                        }
                     }
                 }
                 catch (exception &err)
@@ -224,6 +225,7 @@ void udp_server(){
         received_message received_msg;
         received_msg.value = json_data.at("value");
         received_msg.timestamp = getTimeStamp();
+        received_msg.id = json_data.at("id");
 
         // Search if server doesn't know client
         if (data_map_pointer->find(json_data.at("id")) == data_map_pointer->end())
@@ -260,7 +262,7 @@ int main(){
         // In order to not exit the programm when Main finishes.
         // Here we could read user input.
         while(true){
-            
+
         }
         //udp_thread.join();
         //http_thread.join();
