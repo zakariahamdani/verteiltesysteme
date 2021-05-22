@@ -67,3 +67,8 @@ CMakeUserPresets.json
 # Ignore all local history of files
 .history
 .ionide
+.vscode/launch.json
+.vscode/settings.json
+.vscode/tasks.json
+client/main
+server/main

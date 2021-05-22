@@ -253,13 +253,14 @@ void udp_server(){
 }
 
 int main(){
-    std::thread udp_thread(udp_server);
-    std::thread http_thread(http_server);
-
-    // In order to not exit the programm when Main finishes. 
-    // Here we could read user input.
-    udp_thread.join(); 
-    http_thread.join(); 
-
+        std::thread udp_thread(udp_server);
+        std::thread http_thread(http_server);
+        // In order to not exit the programm when Main finishes.
+        // Here we could read user input.
+        while(true){
+            
+        }
+        //udp_thread.join();
+        //http_thread.join();
     return 0;
 }
