@@ -39,7 +39,8 @@ int main(int argc, char **argv)
     struct sockaddr_in servaddr;
     servaddr.sin_family = AF_INET;
     servaddr.sin_port = htons(UDP_PORT);
-    servaddr.sin_addr.s_addr = inet_addr("172.20.0.2");
+    servaddr.sin_addr.s_addr = inet_addr("172.20.0.2"); // Docker-server Static IP
+    //servaddr.sin_addr.s_addr = INADDR_ANY; // Local (Use it when not using the docker network)
     int client_socket = initialize_udp_client();
 
     // Parse command line options, like type of Client and ID
@@ -85,8 +86,8 @@ int main(int argc, char **argv)
         sendto(client_socket, serialized, strlen(serialized),
                MSG_CONFIRM, (const struct sockaddr *)&servaddr,
                sizeof(servaddr));
-        printf("Message sent:\n");
-        printf(serialized);
+        printf("Message sent:");
+        printf(serialized, "\n");
 
         sleep(2);
 

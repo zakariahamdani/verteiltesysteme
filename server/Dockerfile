@@ -14,7 +14,7 @@ RUN     mkdir -p /app
 COPY    ./ /app/
 WORKDIR /app
 # Build the files inside
-RUN [ "g++","-static","-o", "main", "main.cpp" ]     
+RUN [ "g++","-static","-pthread","-o","main","main.cpp" ]     
 
 
 #### RUN APP ####
