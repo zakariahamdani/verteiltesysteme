@@ -17,7 +17,7 @@ using json = nlohmann::json;
 
 int initialize_udp_client(){
     int client_socket;
-    char *hello = "Hello from client";
+    //char *hello = "Hello from client";
 
     // Creating socket file descriptor
     if ((client_socket = socket(AF_INET, SOCK_DGRAM, 0)) < 0)

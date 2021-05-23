@@ -38,7 +38,7 @@ void http_server(){
     int opt = 1;
     int addrlen = sizeof(address);
     char buffer[1024] = {0};
-    char *hello = "Hello from server";
+    //char *hello = "Hello from server";
 
     // Creating socket file descriptor
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0){
@@ -103,11 +103,15 @@ void http_server(){
                         printf("ID %s wasn't found/wasn't a number", http_header_word.c_str());
                     }
                     else {
-                        content.append("<h1>ID:" + http_header_word + "</h1>\n");
+                        content.append("<h1>Consumer: " + http_header_word + "</h1>\n");
                         auto const &pair = *data_map_pointer->find(stoi(http_header_word));
-                            for (auto &sec_pair: pair.second){
-                                content.append("<h2> id: " + to_string(sec_pair.id) + "Timestamp:" + sec_pair.timestamp + " Value:"+to_string(sec_pair.value) + "</h2>\n");
-                            }
+                        content.append("<table border=\"1\" cellspacing=\"0\"><thead><tr><th></th><th>Timestamp</th><th>Value</th></tr></thead>");
+                        int index = 1;
+                        for (auto &sec_pair : pair.second) {
+                            content.append("<tr><td>" + to_string(index) + "</td><td>" + sec_pair.timestamp + "</td><td>" + to_string(sec_pair.value) + "</td></tr>\n");
+                            index++;
+                        }
+                        content.append("</table>");
                     }
                 }
                 catch (exception &err) {
@@ -124,11 +128,15 @@ void http_server(){
                         printf("ID %s wasn't found/wasn't a number", http_header_word.c_str());
                     }
                     else {
-                        content.append("<h1>ID:" + http_header_word + "</h1>\n");
+                        content.append("<h1>Producer: " + http_header_word + "</h1>\n");
                         auto const &pair = *data_map_pointer->find(stoi(http_header_word));
+                        content.append("<table border=\"1\" cellspacing=\"0\"><thead><tr><th></th><th>Timestamp</th><th>Value</th></tr></thead>");
+                        int index = 1;
                             for (auto &sec_pair : pair.second) {
-                                content.append("<h2> id: " + to_string(sec_pair.id) + " Timestamp:" + sec_pair.timestamp + " Value:" + to_string(sec_pair.value) + "</h2>\n");
+                                content.append("<tr><td>" + to_string(index) + "</td><td>" + sec_pair.timestamp + "</td><td>" + to_string(sec_pair.value) + "</td></tr>\n");
+                                index++;
                             }
+                            content.append("</table>");
                     }
                 }
                 catch (exception &err)
