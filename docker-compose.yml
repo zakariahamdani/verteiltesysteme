@@ -1,0 +1,72 @@
+# Source: https://medium.com/free-code-camp/a-beginners-guide-to-docker-how-to-create-a-client-server-side-with-docker-compose-12c8cf0ae0aa
+version: "3"
+
+# 1 service = 1 container.
+services:
+  server:
+    # Here 'server/' corresponds to the path to the server folder
+    # that contains the Dockerfile to use.
+    build: server/
+
+    networks:
+      static-network:
+        ipv4_address: 172.20.0.2
+
+    # The command to execute once the image is created.
+    command: ./main
+
+    # The ports to open
+    # Its syntax is as follows: [port we want on our machine]:[port we want to retrieve in the container]
+    ports:
+      - "8001:8001/tcp"
+    
+    # The keyword 'network_mode' is used to define the network type.
+    # Here we define that the container can access to the 'localhost' of the computer.
+    #network_mode: host # HTTP Server TODO
+
+  client_verbraucher_1:
+    build: client/
+    command: ["./main", "-i", "1"]
+    networks:
+      static-network:
+        ipv4_address: 172.20.0.3
+    
+    # Here, we want the 'client' service to wait until the 'server' service is ready.
+    depends_on:
+      - server
+
+  client_consumer_3:
+    build: client/
+    command: ./main -c -i 3
+    networks:
+      static-network:
+        ipv4_address: 172.20.0.4
+
+    depends_on:
+      - server
+  
+  client_consumer_5:
+    build: client/
+    command: ./main -c -i 5
+    networks:
+      static-network:
+        ipv4_address: 172.20.0.5
+
+    depends_on:
+      - server
+
+  client_producer_2:
+    build: client/
+    command: ./main -i 2
+    networks:
+      static-network:
+        ipv4_address: 172.20.0.6
+
+    depends_on:
+      - server
+  
+networks:
+  static-network:
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
