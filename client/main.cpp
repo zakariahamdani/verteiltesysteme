@@ -8,6 +8,7 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <iostream>
+#include <time.h>
 #include "./dependencies/json.hpp"
 #include "./dependencies/cxxopts.hpp"
 
@@ -50,12 +51,13 @@ int main(int argc, char **argv)
         ("i,id", "Client's ID", cxxopts::value<int>())
         ("h,help", "Print help");
     cxxopts::ParseResult result = options.parse(argc, argv);
-        
+
     if (result.count("help")){
         std::cout << options.help() << std::endl;
         exit(0);
     }
 
+    srand(result["id"].as<int>());
     // Write readed data
     json client_data;
     if (result.count("consumer")){
