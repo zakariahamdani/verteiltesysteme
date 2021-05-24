@@ -14,7 +14,6 @@
 
 #define UDP_PORT 55443
 #define MAXLINE 1024
-using json = nlohmann::json;
 
 int initialize_udp_client(){
     int client_socket;
@@ -59,7 +58,7 @@ int main(int argc, char **argv)
 
     srand(result["id"].as<int>());
     // Write readed data
-    json client_data;
+    nlohmann::json client_data;
     if (result.count("consumer")){
         client_data["type"] = "c";
     }else{
