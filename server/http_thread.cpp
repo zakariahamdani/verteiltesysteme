@@ -2,6 +2,8 @@
 // Created by zpraktikawm on 24.05.21.
 //
 #include "globalVariables.h"
+
+
 void http_server()
 {
     int server_fd, new_socket, valread;
