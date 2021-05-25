@@ -3,22 +3,22 @@
 //
 #include "globalVariables.h"
 
-int sockfd;
-char buffer[MAXLINE];
+int udpSockfd;
+char udpBuffer[MAXLINE];
 struct sockaddr_in servaddr, cliaddr;
 
-socklen_t sizeOfClientAdrr;
 int packetSize;
+socklen_t sizeOfClientAdrr;
 
 
-void setupSocket();
+void setupUdpSocket();
 void waitForPacket();
 void parseAndSavePacket();
 
 void udp_server()
 {
     printf("Starting UDP-Server...");
-    setupSocket();
+    setupUdpSocket();
 
     printf("UDP-Server is UP and running!");
     while (true)
@@ -36,17 +36,17 @@ void udp_server()
     }
 }
 
-void setupSocket(){
+void setupUdpSocket(){
 
     // Creating socket file descriptor
-    if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
+    if ((udpSockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
     {
         perror("socket creation failed");
         exit(EXIT_FAILURE);
     }
 
     memset(&servaddr, 0, sizeof(servaddr));
-    memset(&cliaddr, 0, sizeof(cliaddr));
+    //memset(&cliaddr, 0, sizeof(cliaddr));
 
     // Filling server information
     servaddr.sin_family = AF_INET; // IPv4
@@ -54,7 +54,7 @@ void setupSocket(){
     servaddr.sin_port = htons(UDP_PORT);
 
     // Bind the socket with the server address
-    if (bind(sockfd, (const struct sockaddr *)&servaddr,
+    if (bind(udpSockfd, (const struct sockaddr *)&servaddr,
              sizeof(servaddr)) < 0)
     {
         perror("bind failed");
@@ -66,17 +66,17 @@ void setupSocket(){
 
 void waitForPacket(){
     // Wait for a message
-    packetSize = recvfrom(sockfd, (char *)buffer, MAXLINE,
+    packetSize = recvfrom(udpSockfd, (char *)udpBuffer, MAXLINE,
                           MSG_WAITALL,
                           (struct sockaddr *)&cliaddr,
                           &sizeOfClientAdrr);
-    buffer[packetSize] = '\0';
-    printf("Client sent us: %s\n", buffer);
+    udpBuffer[packetSize] = '\0';
+    printf("Client sent us: %s\n", udpBuffer);
 }
 
 void parseAndSavePacket(){
 
-    auto json_data = nlohmann::json::parse(buffer);
+    auto json_data = nlohmann::json::parse(udpBuffer);
 
     // Pointer points to corresponding vector
     if (json_data.at("type") == "c")
