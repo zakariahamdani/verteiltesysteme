@@ -4,7 +4,7 @@ about: Template zur Erfassung einer Anforderung als issue.
 
 ---
 
-# Anforderung: NAME DER STORY
+# Anforderung: NAME DER Anforderung
 Als ..., möchte ich ..., damit ...
 
 # Akeptanzkriterien
