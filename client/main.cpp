@@ -15,9 +15,10 @@
 #define UDP_PORT 55443
 #define MAXLINE 1024
 
+std::string getTimeStamp();
+
 int initialize_udp_client(){
     int client_socket;
-    //char *hello = "Hello from client";
 
     // Creating socket file descriptor
     if ((client_socket = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
@@ -79,7 +80,7 @@ int main(int argc, char **argv)
         // Create data to send
         int value = rand()%1000;
         client_data["value"] = value;
-
+        client_data["timeStamp"] = getTimeStamp();
         // Serialize the structure to a json-string
         char serialized[client_data.dump().length()]; // Create a char[] big enough to hold our serialized str
         strcpy(serialized, client_data.dump().c_str()); // Save the serialized str on that created variable
@@ -103,4 +104,17 @@ int main(int argc, char **argv)
     }
     close(client_socket);
     return 0;
+}
+
+std::string getTimeStamp()
+{
+    time_t rawtime;
+    struct tm *timeInfo;
+
+    time(&rawtime);
+    tzset();
+
+    timeInfo = localtime(&rawtime);
+
+    return asctime(timeInfo);
 }
