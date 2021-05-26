@@ -158,7 +158,11 @@ void constructHTML404Method(){
 
 void constructHTML404SubDomain(){
     send_404 = true;
-    content.append("<h2> We couldn't find a subsection named " + subDomain + " </h2></div> </html>");
+    if(subDomain == ""){
+        content.append("<h2> Main page not found </h2></div> </html>");
+    } else {
+        content.append("<h2> We couldn't find a subsection named " + subDomain + " </h2></div> </html>");
+    }
     printf("It was %s and not api", subDomain.c_str());
 }
 
