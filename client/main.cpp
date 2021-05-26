@@ -18,7 +18,7 @@
 int initialize_udp_client();
 struct sockaddr_in fillServerInformation();
 nlohmann::json writeParsedCommandLineOptions(int p_argc, char **p_argv);
-std::string getTimeStamp();
+std::time_t getTimeStamp();
 
 int main(int argc, char **argv)
 {
@@ -105,14 +105,7 @@ nlohmann::json writeParsedCommandLineOptions(int p_argc, char **p_argv){
     return client_data;
 }
 
-std::string getTimeStamp()
+long int getTimeStamp()
 {
-    time_t rawtime;
-    struct tm *timeInfo;
-
-    time(&rawtime);
-    tzset();
-    timeInfo = localtime(&rawtime);
-
-    return asctime(timeInfo);
+    return static_cast<long int>(std::time(nullptr));
 }

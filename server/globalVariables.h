@@ -11,7 +11,7 @@
 
 struct received_message
 {
-    std::string timestamp;
+    long int timestamp;
     int value;
     int id;
 };

@@ -91,6 +91,7 @@ void parseAndSavePacket(){
     received_msg.timestamp = json_data.at("timeStamp");
     received_msg.id = json_data.at("id");
 
+
     // Search if server doesn't know client
     if (data_map_pointer->find(json_data.at("id")) == data_map_pointer->end())
     {

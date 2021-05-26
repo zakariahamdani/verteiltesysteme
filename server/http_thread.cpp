@@ -27,6 +27,8 @@ void constructParticipantHTML(std::string p_participantType, std::string p_parti
 void constructHTML404Method();
 void constructHTML404SubDomain();
 void sendRespons();
+std::string getStatus(int p_id);
+long int getTimeStamp();
 
 void http_server() {
 
@@ -110,11 +112,13 @@ void parseRequest() {
 }
 
 void constructParticipantHTML(std::string p_participantType, std::string p_participantId) {
-
+    std::string tableHeader;
     if (p_participantType == "consumer") {
         data_map_pointer = &consumer_data_map;
+        tableHeader = "<table border=\"1\" cellspacing=\"0\"><thead><tr><th></th><th>Timestamp</th><th>consumed value in KW</th></tr></thead>";
     } else if (p_participantType == "producer") {
         data_map_pointer = &producer_data_map;
+        tableHeader = "<table border=\"1\" cellspacing=\"0\"><thead><tr><th></th><th>Timestamp</th><th>produced value in KW</th></tr></thead>";
     } else {
         send_404 = true;
         content.append(
@@ -127,15 +131,14 @@ void constructParticipantHTML(std::string p_participantType, std::string p_parti
         if (data_map_pointer->find(stoi(p_participantId)) == data_map_pointer->end()) {
             send_404 = true;
             printf("ID %s wasn't found/wasn't a number", p_participantId.c_str());
-            content.append("<h2> We couldn't find a" + p_participantType + " with the ID " + p_participantId + " </h2></div> </html>");
+            content.append("<h2> We couldn't find a" + p_participantType + " with the ID: " + p_participantId + " </h2></div> </html>");
         } else {
-            content.append("<h1>" + p_participantType + ": " + p_participantId + "</h1>\n");
+            content.append("<h1>" + p_participantType + ": " + p_participantId + " State: " + getStatus(stoi(p_participantId)) + "</h1>\n");
             auto const &pair = *data_map_pointer->find(stoi(p_participantId));
-            content.append(
-                    "<table border=\"1\" cellspacing=\"0\"><thead><tr><th></th><th>Timestamp</th><th>Value</th></tr></thead>");
+            content.append(tableHeader);
             int index = 1;
             for (auto &sec_pair : pair.second) {
-                content.append("<tr><td>" + std::to_string(index) + "</td><td>" + sec_pair.timestamp + "</td><td>" +
+                content.append("<tr><td>" + std::to_string(index) + "</td><td>" + std::ctime(&sec_pair.timestamp) + "</td><td style=\"text-align:center\">" +
                                std::to_string(sec_pair.value) + "</td></tr>\n");
                 index++;
             }
@@ -178,4 +181,20 @@ void sendRespons(){
     int size = output.size() + 1;
 
     send(new_socket, output.c_str(), size, 0);
+}
+
+std::string getStatus(int p_id){
+    int  diff = getTimeStamp() - data_map_pointer->find(p_id)->second.back().timestamp;
+
+    if(diff > 5){
+        return "offline since:" + std::to_string(data_map_pointer->find(p_id)->second.back().timestamp);
+    }else{
+        return "online";
+    }
+
+}
+
+long int getTimeStamp()
+{
+    return static_cast<long int>(std::time(nullptr));
 }
