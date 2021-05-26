@@ -10,7 +10,6 @@ struct sockaddr_in servaddr, cliaddr;
 int packetSize;
 socklen_t sizeOfClientAdrr;
 
-
 void setupUdpSocket();
 void waitForPacket();
 void parseAndSavePacket();
@@ -23,10 +22,8 @@ void udp_server()
     printf("UDP-Server is UP and running!");
     while (true)
     {
-
         waitForPacket();
         parseAndSavePacket();
-
         /*
         sendto(sockfd, (const char *)hello, strlen(hello),
                MSG_CONFIRM, (const struct sockaddr *)&cliaddr,
