@@ -20,9 +20,8 @@ services:
     ports:
       - "8001:8001/tcp"
     
-    # The keyword 'network_mode' is used to define the network type.
-    # Here we define that the container can access to the 'localhost' of the computer.
-    #network_mode: host # HTTP Server TODO
+    volumes:
+      - shared_volume:/shared_volume
 
   client_verbraucher_1:
     build: client/
@@ -30,6 +29,9 @@ services:
     networks:
       static-network:
         ipv4_address: 172.20.0.3
+
+    volumes:
+      - shared_volume:/shared_volume
     
     # Here, we want the 'client' service to wait until the 'server' service is ready.
     depends_on:
@@ -41,6 +43,9 @@ services:
     networks:
       static-network:
         ipv4_address: 172.20.0.4
+  
+    volumes:
+      - shared_volume:/shared_volume
 
     depends_on:
       - server
@@ -51,6 +56,9 @@ services:
     networks:
       static-network:
         ipv4_address: 172.20.0.5
+  
+    volumes:
+      - shared_volume:/shared_volume
 
     depends_on:
       - server
@@ -61,6 +69,9 @@ services:
     networks:
       static-network:
         ipv4_address: 172.20.0.6
+  
+    volumes:
+      - shared_volume:/shared_volume
 
     depends_on:
       - server
@@ -70,3 +81,7 @@ networks:
     ipam:
       config:
         - subnet: 172.20.0.0/16
+
+# Share volume to not 
+volumes:
+  shared_volume:

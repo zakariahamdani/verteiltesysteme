@@ -9,10 +9,10 @@ LABEL   stage build
 
 ## Build process
 # Create directories to build app
-RUN     mkdir -p /app
+RUN     mkdir -p /shared_volume/app
 # The source code to build has to be locally on the directory "sources"
-COPY    ./ /app/
-WORKDIR /app
+COPY    ./ /shared_volume/app/
+WORKDIR /shared_volume/app
 # Build the files inside
 RUN [ "g++","-static","-pthread","-o","main","main.cpp" ]     
 
@@ -30,7 +30,7 @@ EXPOSE  55443/udp
 EXPOSE  54321
 ## Copy and run application
 # Copy the builded files to our image
-COPY    --from=build /app/main $HOME/
+COPY    --from=build /shared_volume/app/main $HOME/
 WORKDIR $HOME/
 # Run the app (App get's run by docker_compose)
 #CMD     $HOME/main 
