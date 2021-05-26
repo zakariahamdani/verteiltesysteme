@@ -1,10 +1,10 @@
 ---
-name: User story template
-about: Template zur Erfassung einer User Story als issue.
+name: Anforderung template
+about: Template zur Erfassung einer Anforderung als issue.
 
 ---
 
-# User story: NAME DER STORY
+# Anforderung: NAME DER STORY
 Als ..., möchte ich ..., damit ...
 
 # Akeptanzkriterien
