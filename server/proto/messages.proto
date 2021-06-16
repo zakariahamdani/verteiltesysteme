@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package messages;
+
+service serverActions {
+    rpc turnOn(Void) returns(Bool);
+    rpc turnOff(Void) returns(Bool);
+}
+
+message Void { }
+
+message Bool {
+    bool boolVar = 1;
+}

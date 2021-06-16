@@ -7,13 +7,13 @@ services:
     # Here 'server/' corresponds to the path to the server folder
     # that contains the Dockerfile to use.
     build: server/
+    # The command to execute once the image is created.
+    command: ["/data/app/main_s"]
 
     networks:
       static-network:
         ipv4_address: 172.20.0.2
 
-    # The command to execute once the image is created.
-    command: ./main
 
     # The ports to open
     # Its syntax is as follows: [port we want on our machine]:[port we want to retrieve in the container]
