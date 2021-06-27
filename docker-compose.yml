@@ -23,9 +23,9 @@ services:
     volumes:
       - shared_volume:/shared_volume
 
-  client_verbraucher_1:
+  client_consumer_1:
     build: client/
-    command: ["./main", "-i", "1"]
+    command: ./main -c -i 1
     networks:
       static-network:
         ipv4_address: 172.20.0.3

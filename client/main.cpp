@@ -39,8 +39,7 @@ class serverActionsServiceImpl final : public messages::serverActions::Service
     grpc::Status turnOff(ServerContext *context, const messages::Void *request,
                          messages::Bool *reply) override
     {
-        std::cout << "Received request: " << request->ShortDebugString()
-                  << std::endl;
+        //std::cout << "Turning off this client..." << std::endl;
         isOn = false;
         reply->set_boolvar(true);
         return Status::OK;
@@ -49,8 +48,7 @@ class serverActionsServiceImpl final : public messages::serverActions::Service
     grpc::Status turnOn(ServerContext *context, const messages::Void *request,
                         messages::Bool *reply) override
     {
-        std::cout << "Received request: " << request->ShortDebugString()
-                  << std::endl;
+        //std::cout << "Turning on this client..." << std::endl;
         isOn = true;
         reply->set_boolvar(true);
         return Status::OK;
@@ -59,22 +57,22 @@ class serverActionsServiceImpl final : public messages::serverActions::Service
 
 void run_gRPC(){
     std::cout << "Running RPC " << std::endl;
-    std::string server_address("172.20.0.3:50051");
+    std::string server_address("0.0.0.0:50051");
     serverActionsServiceImpl service;  
     ServerBuilder builder;
 
     // Listen on the given address without any authentication mechanism. 
     builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
-    std::cout << "Port registered" << std::endl;
+    std::cout << "Port registered on: " << server_address << std::endl;
 
     // Register "service" as the instance through which we'll communicate with
     // clients. In this case it corresponds to a *synchronous* service.
     builder.RegisterService(&service);
-    std::cout << "Service registered" << std::endl;
+    printf("Service registered\n");
 
     // Finally assemble the server.
     server = builder.BuildAndStart();
-    std::cout << "Server listening on " << server_address << std::endl;
+    printf("Server listening on %s\n" , server_address);
 
     std::signal(SIGTERM, [](int)
         {
@@ -86,14 +84,16 @@ void run_gRPC(){
     server->Wait();
 }
 
+//std::thread t_run_gRPC(&run_gRPC);
 int initialize_udp_client();
-std::thread t_run_gRPC(run_gRPC);
 struct sockaddr_in fillServerInformation();
 nlohmann::json writeParsedCommandLineOptions(int p_argc, char **p_argv);
 std::time_t getTimeStamp();
 
 int main(int argc, char **argv)
 {
+    std::cout << "Time to run gRPC...";
+    std::thread t_run_gRPC(&run_gRPC);
     struct sockaddr_in servaddr = fillServerInformation();
     int client_socket = initialize_udp_client();
     nlohmann::json client_data = writeParsedCommandLineOptions(argc, argv);
@@ -117,8 +117,8 @@ int main(int argc, char **argv)
         sendto(client_socket, serialized, strlen(serialized),
                MSG_CONFIRM, (const struct sockaddr *)&servaddr,
                sizeof(servaddr));
-        printf("Message sent:");
-        printf(serialized, "\n");
+        //printf("Message sent:");
+        //printf(serialized, "\n");
 
         sleep(2);
     }
