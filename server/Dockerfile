@@ -3,24 +3,24 @@
 
 #### BUILD ####
 ## Get C++ Compiler
-FROM    gcc:bullseye AS build
+FROM    grpc/cxx:1.10 AS build
 LABEL   maintainer Hamdani-Menke
 LABEL   stage build
 
 ## Build process
 # Create directories to build app
-RUN     mkdir -p /shared_volume/app
+RUN     mkdir -p /data/app
 # The source code to build has to be locally on the directory "sources"
-COPY    ./ /shared_volume/app/
-WORKDIR /shared_volume/app
+COPY    ./ /data/app/
+WORKDIR /data/app
 # Build the files inside
-RUN [ "g++","-static","-pthread","-o","main","main.cpp" ]     
-
+RUN make messages.grpc.pb.cc messages.pb.cc main_s 
+RUN export GRPC_TRACE=all
 
 #### RUN APP ####
 ## Get Ubuntu 18.04
-FROM    ubuntu:bionic
-LABEL   stage run
+#FROM    ubuntu:bionic
+#LABEL   stage run
 ## Expose ports
 # Port for http things
 EXPOSE  8001
@@ -28,9 +28,12 @@ EXPOSE  8001
 EXPOSE  55443/udp
 # Port for tcp communication
 EXPOSE  54321
+# Port for gRPC
+EXPOSE 50051
+EXPOSE 50051/udp
 ## Copy and run application
 # Copy the builded files to our image
-COPY    --from=build /shared_volume/app/main $HOME/
-WORKDIR $HOME/
+#COPY    --from=build /shared_volume/app/main $HOME/
+WORKDIR /data/app/
 # Run the app (App get's run by docker_compose)
 #CMD     $HOME/main 
