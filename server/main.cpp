@@ -21,6 +21,7 @@
 
 #include "./messages.grpc.pb.h"
 #include <grpcpp/grpcpp.h>
+#include "./rpc_thread.cpp"
 
 using grpc::Channel;
 using grpc::ChannelCredentials;
@@ -50,7 +51,7 @@ public:
         ClientContext context;
 
         // The actual RPC.
-        //std::cout << "Sending turn Off request" << std::endl;
+        // std::cout << "Sending turn Off request" << std::endl;
         Status status = stub_->turnOff(&context, request, &reply);
 
         // Act upon its status.
@@ -99,8 +100,10 @@ private:
 int main() {
     std::thread udp_thread(udp_server);
     std::thread http_thread(http_server);
+    std::thread rpc_thread(run_gRPC);
 
-    std::cout << "Waiting for gRPC server..."<< std::endl;
+    std::cout
+        << "Waiting for gRPC server..." << std::endl;
     sleep(5);
 
     //gRPC
