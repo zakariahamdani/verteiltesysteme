@@ -23,6 +23,17 @@ services:
     volumes:
       - shared_volume:/shared_volume
 
+  externer_client:
+    build: externer_client/
+    command: sleep 360
+    networks: 
+      static-network:
+        ipv4_address: 172.20.0.10
+    volumes:
+      - shared_volume:/shared_volume
+    depends_on:
+      - server
+      
   client_consumer_1:
     build: client/
     command: ./main -c -i 1

@@ -29,8 +29,7 @@ using grpc::Status;
 bool isOn = true;
 
 
-// The gRPC server is defined globally so that SIGTERM handler can shut it
-// down when Kubernetes stops the process.
+// The gRPC server is defined globally so that SIGTERM handler can shut it down
 std::unique_ptr<Server> server;
 
 // Logic and data behind the server's behavior.
@@ -84,14 +83,12 @@ void run_gRPC(){
     server->Wait();
 }
 
-//std::thread t_run_gRPC(&run_gRPC);
 int initialize_udp_client();
 struct sockaddr_in fillServerInformation();
 nlohmann::json writeParsedCommandLineOptions(int p_argc, char **p_argv);
 std::time_t getTimeStamp();
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     std::cout << "Time to run gRPC...";
     std::thread t_run_gRPC(&run_gRPC);
     struct sockaddr_in servaddr = fillServerInformation();

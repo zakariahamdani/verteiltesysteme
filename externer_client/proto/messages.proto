@@ -2,22 +2,12 @@ syntax = "proto3";
 
 package messages;
 
-service serverActions {
-    rpc turnOn(Void) returns(Bool);
-    rpc turnOff(Void) returns(Bool);
+service serverQueries {
+    //rpc getEntireHistory(Void)              returns();
+    rpc getHistoryOfAllParticipants(Void)   returns(entireHistory);
 }
 
 message Void { }
-
-message Bool {
-    bool boolVar = 1;
-}
-
-// -----------------------
-service serverQueries {
-    //rpc getEntireHistory()              returns();
-    rpc getHistoryOfAllParticipants(Void)   returns(entireHistory);
-}
 
 message entireHistory {
     repeated participantHistory participantHistory = 1;

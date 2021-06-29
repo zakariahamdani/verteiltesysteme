@@ -72,3 +72,4 @@ CMakeUserPresets.json
 .vscode/tasks.json
 client/main
 server/main
+externer_client/main
