@@ -52,24 +52,27 @@ private:
 
 
 int main(int argc, char **argv) {
-
-    sleep(5);
-
+    std::cout << "Welcome to our extern client" << std::endl;
     //gRPC
     std::string grpc_endpoint("172.20.0.2:50051"); // Server
     MessagesClient messages(grpc::CreateChannel(grpc_endpoint, grpc::InsecureChannelCredentials()));
 
     while(true) {
-        sleep(2);
+        std::cout << "Press enter to get the historical data of every client connected to the server" << std::endl;
+        std::cin.ignore();
         messages::entireHistory eHistory = messages.getHistoryOfAllParticipants();
         for (auto &participant_data : *eHistory.mutable_participanthistory()) {
             messages::participant participant = participant_data.participant();
-            std::cout << "type: " << participant.type() << " id: " << participant.id() << std::endl;
+            std::cout << "\nTYPE: " << participant.type() << "\t\tID: " << participant.id() << std::endl;
+            int counter = 0;
             for (auto &participant_history : *participant_data.mutable_participantinformation()) {
-                std::cout << "\ttimestamp: " << participant_history.timestamp() 
-                        << " value: "      << participant_history.value()<<std::endl;
+                std::cout << "timestamp: " << participant_history.timestamp() 
+                        << " value: "      << participant_history.value()<<"  \t";
+                if(++counter%3==0){
+                    std::cout << std::endl;
+                }
             }
         }
-        sleep(5);
+        std::cout << "\n\n";
     }
 }
