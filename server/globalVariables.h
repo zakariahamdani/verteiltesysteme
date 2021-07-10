@@ -9,6 +9,12 @@
 #define HTTP_PORT 8001
 #define MAXLINE 1024
 
+#define TOPIC "client/client-status"
+#define MQTT_HOST "172.20.0.11"
+#define MQTT_PORT 1883
+#define MQTTCLIENT_QOS2 1
+#define DEFAULT_STACK_SIZE -1
+
 struct received_message
 {
     long int timestamp;

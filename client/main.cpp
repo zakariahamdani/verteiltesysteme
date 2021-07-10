@@ -16,7 +16,9 @@
 #include "./dependencies/json.hpp"
 #include "./dependencies/cxxopts.hpp"
 #include "./messages.grpc.pb.h"
+#include "./mqtt_thread.cpp"
 #include <grpcpp/grpcpp.h>
+#include "globalVariables.h"
 
 #define UDP_PORT 55443
 #define MAXLINE 1024
@@ -26,8 +28,8 @@ using grpc::ServerBuilder;
 using grpc::ServerContext;
 using grpc::Status;
 
+// If false, this participant will stop generating and sending new messages
 bool isOn = true;
-
 
 // The gRPC server is defined globally so that SIGTERM handler can shut it down
 std::unique_ptr<Server> server;
@@ -39,7 +41,7 @@ class serverActionsServiceImpl final : public messages::serverActions::Service
                          messages::Bool *reply) override
     {
         //std::cout << "Turning off this client..." << std::endl;
-        isOn = false;
+        CLIENT_RUNNING = false;
         reply->set_boolvar(true);
         return Status::OK;
     }
@@ -48,7 +50,7 @@ class serverActionsServiceImpl final : public messages::serverActions::Service
                         messages::Bool *reply) override
     {
         //std::cout << "Turning on this client..." << std::endl;
-        isOn = true;
+        CLIENT_RUNNING = true;
         reply->set_boolvar(true);
         return Status::OK;
     }
@@ -89,11 +91,12 @@ nlohmann::json writeParsedCommandLineOptions(int p_argc, char **p_argv);
 std::time_t getTimeStamp();
 
 int main(int argc, char **argv) {
+    client_data = writeParsedCommandLineOptions(argc, argv);
     std::cout << "Time to run gRPC...";
+    std::thread t_run_mqttClient(run_mqtt, client_data["id"]);
     std::thread t_run_gRPC(&run_gRPC);
     struct sockaddr_in servaddr = fillServerInformation();
     int client_socket = initialize_udp_client();
-    nlohmann::json client_data = writeParsedCommandLineOptions(argc, argv);
 
     srand(client_data["id"]);
     std::cout << "Client with ID:" << client_data["id"] << std::endl;
@@ -147,8 +150,6 @@ struct sockaddr_in fillServerInformation(){
 }
 
 nlohmann::json writeParsedCommandLineOptions(int p_argc, char **p_argv){
-    nlohmann::json client_data;
-
     cxxopts::Options options("main", "A client that can be either consumer or producer");
     options.add_options()
             ("c,consumer", "Makes the client a consumer. If it isn't set, the Client will be a Producer", cxxopts::value<bool>()->default_value("false"))
@@ -171,14 +172,12 @@ nlohmann::json writeParsedCommandLineOptions(int p_argc, char **p_argv){
     // Catch if user didn't passed any parameters
     try {
         client_data["id"] = result["id"].as<int>();
-    } catch (cxxopts::option_has_no_value_exception) {
+       // CLIENT_ID = client_data["id"];
+    }
+    catch (cxxopts::option_has_no_value_exception)
+    {
         std::cout << options.help() << std::endl;
         exit(0);
     }
     return client_data;
-}
-
-long int getTimeStamp()
-{
-    return static_cast<long int>(std::time(nullptr));
 }

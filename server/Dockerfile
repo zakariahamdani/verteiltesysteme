@@ -7,6 +7,10 @@ FROM    grpc/cxx:1.10 AS build
 LABEL   maintainer Hamdani-Menke
 LABEL   stage build
 
+## Install MQTT-client
+RUN     apt update
+RUN     apt-get install libmosquitto1 libmosquitto-dev libmosquittopp1 libmosquittopp-dev -y
+
 ## Build process
 # Create directories to build app
 RUN     mkdir -p /data/app
@@ -14,7 +18,7 @@ RUN     mkdir -p /data/app
 COPY    ./ /data/app/
 WORKDIR /data/app
 # Build the files inside
-RUN make messages.grpc.pb.cc messages.pb.cc main_s 
+RUN make 
 RUN export GRPC_TRACE=all
 
 #### RUN APP ####

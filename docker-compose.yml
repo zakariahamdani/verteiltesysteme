@@ -22,6 +22,16 @@ services:
     
     volumes:
       - shared_volume:/shared_volume
+  
+  mosquitto:
+    image: eclipse-mosquitto
+    volumes:
+      - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+    networks:
+      static-network:
+        ipv4_address: 172.20.0.11
+    ports:
+      - 1883:1883
 
   externer_client:
     build: externer_client/

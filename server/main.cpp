@@ -30,6 +30,7 @@ using grpc::Status;
 
 #include "http_thread.cpp"
 #include "udp_thread.cpp"
+#include "mqtt_thread.cpp"
 
 
 class MessagesClient {
@@ -98,9 +99,10 @@ private:
 // This function creates a TCP Socket, accepts connections and sends
 // responses to HTTP requests
 int main() {
-    std::thread udp_thread(udp_server);
+    //std::thread udp_thread(udp_server);
     std::thread http_thread(http_server);
     std::thread rpc_thread(run_gRPC);
+    std::thread mqtt_thread(run_mqtt);
 
     std::cout
         << "Waiting for gRPC server..." << std::endl;
