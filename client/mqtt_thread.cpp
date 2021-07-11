@@ -10,9 +10,6 @@
 #include <unistd.h>
 #include "globalVariables.h"
 
-#define CLIENTID "Publisher"
-#define PAYLOAD "Hello World!"
-
 static int run = 1;
 
 void handle_signal(int s) {
@@ -36,8 +33,7 @@ void message_callback(struct mosquitto *mosq, void *obj, const struct mosquitto_
 
 long int getTimeStamp() {return static_cast<long int>(std::time(nullptr));}
 
-void run_mqtt(int clientid)
-{
+void run_mqtt(int clientid) {
     uint8_t reconnect = true;
     struct mosquitto *mosq;
     int rc = 0;
@@ -47,20 +43,21 @@ void run_mqtt(int clientid)
 
     mosquitto_lib_init();
 
+    // Create new client
     std::string s = std::to_string(clientid);
     char const *clientid_char = s.c_str();
     mosq = mosquitto_new(clientid_char, true, 0);
 
+    // Functions called when we connect/receive a message
     mosquitto_connect_callback_set(mosq, connect_callback);
     mosquitto_message_callback_set(mosq, message_callback);
 
+    // Connect created client with the broker
     rc = mosquitto_connect(mosq, MQTT_HOST, MQTT_PORT, 60);
-
-    //mosquitto_subscribe(mosq, NULL, "/devices/wb-adc/controls/+", 0);
 
     srand(client_data["id"]);
     while (true) {
-        if(CLIENT_RUNNING == false){
+        if(CLIENT_RUNNING == false) {
             continue;
         }
         // Create data to send
@@ -71,12 +68,12 @@ void run_mqtt(int clientid)
         char serialized[client_data.dump().length()]; // Create a char[] big enough to hold our serialized str
         strcpy(serialized, client_data.dump().c_str()); // Save the serialized str on that created variable
 
+        // Send serialized JSON to the topic. 
         mosquitto_publish(mosq, NULL, TOPIC, strlen(serialized), serialized, 1, false);
 
         sleep(2);
 
-        if (run && rc)
-        {
+        if (run && rc) {
             printf("connection error!\n");
             sleep(10);
             mosquitto_reconnect(mosq);

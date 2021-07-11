@@ -15,9 +15,6 @@
 #include <unistd.h>
 #include "globalVariables.h"
 
-#define CLIENTID "Publisher"
-#define PAYLOAD "Hello World!"
-
 static int run = 1;
 
 void handle_signal(int s) {
@@ -31,10 +28,35 @@ void connect_callback(struct mosquitto *mosq, void *obj, int result) {
 void message_callback(struct mosquitto *mosq, void *obj, const struct mosquitto_message *message) {
     bool match = 0;
     printf("got message '%.*s' for topic '%s'\n", message->payloadlen, (char *)message->payload, message->topic);
+
+    auto json_data = nlohmann::json::parse((char *)message->payload);
+
+    // Pointer points to corresponding vector
+    if (json_data.at("type") == "c") {
+        data_map_pointer = &consumer_data_map;
+    } else {
+        data_map_pointer = &producer_data_map;
+    }
+
+    //parsing
+    received_message received_msg;
+    received_msg.value = json_data.at("value");
+    received_msg.timestamp = json_data.at("timeStamp");
+    received_msg.id = json_data.at("id");
+
+    // Search if server doesn't know client
+    if (data_map_pointer->find(json_data.at("id")) == data_map_pointer->end()) {
+        // insert a new element if it's the first time to receive from this client
+        data_map_pointer->insert(std::pair<int, std::vector<received_message>>(json_data.at("id"), std::vector<received_message>()));
+        //and then pushback the received msg
+        data_map_pointer->at(json_data.at("id")).push_back(received_msg);
+    } else {
+        // Save data on respective key
+        data_map_pointer->at(json_data.at("id")).push_back(received_msg);
+    }
 }
 
-void run_mqtt()
-{
+void run_mqtt() {
     uint8_t reconnect = true;
     struct mosquitto *mosq;
     int rc = 0;

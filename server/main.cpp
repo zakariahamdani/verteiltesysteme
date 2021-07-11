@@ -56,8 +56,7 @@ public:
         Status status = stub_->turnOff(&context, request, &reply);
 
         // Act upon its status.
-        if (status.ok())
-        {
+        if (status.ok()) {
             return reply.boolvar();
         } else {
             std::cout << status.error_code() << ": " << status.error_message()
@@ -104,8 +103,7 @@ int main() {
     std::thread rpc_thread(run_gRPC);
     std::thread mqtt_thread(run_mqtt);
 
-    std::cout
-        << "Waiting for gRPC server..." << std::endl;
+    std::cout << "Waiting for gRPC server..." << std::endl;
     sleep(5);
 
     //gRPC
