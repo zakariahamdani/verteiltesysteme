@@ -93,15 +93,12 @@ void parseAndSavePacket(){
 
 
     // Search if server doesn't know client
-    if (data_map_pointer->find(json_data.at("id")) == data_map_pointer->end())
-    {
+    if (data_map_pointer->find(json_data.at("id")) == data_map_pointer->end()) {
         // insert a new element if it's the first time to receive from this client
         data_map_pointer->insert(std::pair<int, std::vector<received_message>>(json_data.at("id"), std::vector<received_message>()));
         //and then pushback the received msg
         data_map_pointer->at(json_data.at("id")).push_back(received_msg);
-    }
-    else
-    {
+    } else {
         // Save data on respective key
         data_map_pointer->at(json_data.at("id")).push_back(received_msg);
     }
